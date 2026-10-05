@@ -10,9 +10,7 @@ import "time"
 import "github.com/jan-provaznik/sus"
 import "github.com/NVIDIA/go-nvml/pkg/nvml"
 
-func main () {
-	defer nvml.Shutdown()
-
+func main() {
 	interval := flag.Duration("t", time.Second, "Monitoring interval")
 	flag.Parse()
 
@@ -21,6 +19,7 @@ func main () {
 		fmt.Println("nvmlInit failed")
 		os.Exit(1)
 	}
+	defer nvml.Shutdown()
 
 	list, err := sus.FindAstralDevices()
 	if err != nil {
@@ -42,11 +41,11 @@ func main () {
 			}
 		}
 		fmt.Println()
-		time.Sleep(* interval)
+		time.Sleep(*interval)
 	}
 }
 
-func deviceReport (index int, device sus.AstralDevice) error {
+func deviceReport(index int, device sus.AstralDevice) error {
 	// ... load, as reported via nvml
 	load, err := sus.ReadAstralDeviceLoad(device)
 	if err != nil {
@@ -79,10 +78,10 @@ func deviceReport (index int, device sus.AstralDevice) error {
 	matchDraw := lowerDraw / upperDraw
 
 	// ... report
-	fmt.Printf("Device (%d) known as (%s)\n", 
+	fmt.Printf("Device (%d) known as (%s)\n",
 		index, device.Identifier())
 	fmt.Printf("... total load %5.1f W\n", load)
-	fmt.Printf("... total draw %5.1f W (min %5.1f max %5.1f W) rate %.2f\n", 
+	fmt.Printf("... total draw %5.1f W (min %5.1f max %5.1f W) rate %.2f\n",
 		totalDraw, lowerDraw, upperDraw, matchDraw)
 
 	fmt.Printf("... pins  draw ")
@@ -94,4 +93,3 @@ func deviceReport (index int, device sus.AstralDevice) error {
 
 	return nil
 }
-

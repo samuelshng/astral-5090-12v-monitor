@@ -11,16 +11,14 @@ import "github.com/jan-provaznik/sus"
 import "github.com/NVIDIA/go-nvml/pkg/nvml"
 
 var upperDrawLimit float64 = 150
-var lowerDrawLimit float64 =  10
-var matchDrawLimit float64 =   1
+var lowerDrawLimit float64 = 10
+var matchDrawLimit float64 = 1
 
-func main () {
-	defer nvml.Shutdown()
-
+func main() {
 	interval := flag.Duration("t", time.Second, "Monitoring interval")
 
-	flag.Float64Var(& upperDrawLimit, "u", 105.0, "Maximal power draw per wire (W).")
-	flag.Float64Var(& matchDrawLimit, "m",  0.75, "Maximal mismatch ratio.")
+	flag.Float64Var(&upperDrawLimit, "u", 105.0, "Maximal power draw per wire (W).")
+	flag.Float64Var(&matchDrawLimit, "m", 0.75, "Maximal mismatch ratio.")
 	flag.Parse()
 
 	if upperDrawLimit > 150 || upperDrawLimit < 1 {
@@ -38,6 +36,7 @@ func main () {
 		fmt.Println("nvmlInit failed")
 		os.Exit(1)
 	}
+	defer nvml.Shutdown()
 
 	list, err := sus.FindAstralDevices()
 	if err != nil {
@@ -64,11 +63,11 @@ func main () {
 				os.Exit(1)
 			}
 		}
-		time.Sleep(* interval)
+		time.Sleep(*interval)
 	}
 }
 
-func deviceMonitor (index int, device sus.AstralDevice) error {
+func deviceMonitor(index int, device sus.AstralDevice) error {
 	// ... load, as reported via asus interface
 	pins, err := sus.ReadAstralDevicePins(device)
 	if err != nil {
@@ -106,7 +105,7 @@ func deviceMonitor (index int, device sus.AstralDevice) error {
 			return err
 		}
 
-		fmt.Printf("... limiting power draw to %.1f W\n", 
+		fmt.Printf("... limiting power draw to %.1f W\n",
 			limit)
 	}
 
@@ -123,11 +122,10 @@ func deviceMonitor (index int, device sus.AstralDevice) error {
 				return err
 			}
 
-			fmt.Printf("... attempting to limit device frequency to %d MHz\n", 
+			fmt.Printf("... attempting to limit device frequency to %d MHz\n",
 				limit)
 		}
 	}
 
 	return nil
 }
-
