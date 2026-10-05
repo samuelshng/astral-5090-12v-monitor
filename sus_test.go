@@ -94,3 +94,13 @@ func validTestPins() []AstralDevicePin {
 		{voltage: 12, current: 1},
 	}
 }
+
+// Invalid reductions must fail before consulting or mutating GPU hardware.
+func TestScaleDeviceLoadRejectsInvalidScaleBeforeHardwareAccess(t *testing.T) {
+	device := AstralDevice{}
+	for _, scale := range []float64{0, 1, -1, 2, math.NaN(), math.Inf(1), math.Inf(-1)} {
+		if err := device.ScaleDeviceLoad(scale); err == nil {
+			t.Fatalf("ScaleDeviceLoad(%v) accepted an invalid reduction", scale)
+		}
+	}
+}
