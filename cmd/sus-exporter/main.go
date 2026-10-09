@@ -298,9 +298,9 @@ func main() {
 	ret := nvml.Init()
 	if ret != nvml.SUCCESS {
 		logger.Printf("nvmlInit failed: %v", ret)
-		os.Exit(1)
+	} else {
+		defer nvml.Shutdown()
 	}
-	defer nvml.Shutdown()
 
 	if !isLoopbackListenAddress(*listen) {
 		logger.Printf("warning: exporter is listening beyond loopback on %s; restrict access with a firewall", *listen)
@@ -308,6 +308,7 @@ func main() {
 
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(newSusCollector(hardwareReader{}, logger))
+	registry.MustRegister(newGPUAvailabilityCollector(hardwareGPUReader{}))
 
 	mux := http.NewServeMux()
 	mux.Handle(*metricsPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts{

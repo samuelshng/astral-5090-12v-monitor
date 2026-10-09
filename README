@@ -149,7 +149,14 @@ Metrics
   sus_pin_max_power_watts{gpu_uuid,gpu_index}
   sus_pin_balance_ratio{gpu_uuid,gpu_index}
   sus_device_read_success{gpu_uuid,gpu_index}
+  sus_gpu_available
   sus_scrape_errors_total{reason}
+
+  sus_gpu_available is independent of connector sensors. It is 1 only when
+  NVML discovers at least one GPU and can read every visible GPU's memory.
+  It is 0 for lost GPUs, missing devices, or driver errors, including failed
+  NVML initialization. The HTTP exporter remains available in that state.
+  This check does not prove successful computation or identify an Xid cause.
 
   Do not expect a host label from the exporter. Prometheus adds the scrape
   target as the instance label. Add site/rack/role labels in Prometheus scrape
