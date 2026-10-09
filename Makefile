@@ -13,7 +13,7 @@ bin/susm: susm/main.go $(DEPS) | bin
 bin/susd: susd/main.go $(DEPS) | bin
 	go build -o $@ ./susd
 
-bin/sus-exporter: cmd/sus-exporter/main.go $(DEPS) | bin
+bin/sus-exporter: $(wildcard cmd/sus-exporter/*.go) $(DEPS) | bin
 	go build -o $@ ./cmd/sus-exporter
 
 bin/sus-check: cmd/sus-check/main.go $(DEPS) | bin
